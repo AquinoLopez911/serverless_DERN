@@ -1,0 +1,24 @@
+th, td {
+  padding-top: 15px !important;
+  padding-bottom: 15px !important;
+  border-top: 1px solid #e3f2fd;
+  border-bottom: 1px solid #e3f2fd;
+}
+
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+  background-color: #D7F4F0;
+}
+
+.bg-ice {
+  background-color: #e3f2fd;
+}
+.text-ice {
+  color: #e3f2fd;
+}
+
+.bg-ice2 {
+  background-color: #D7F4F0;
+}
+.text-ice2 {
+  color: #D7F4F0;
+}
