@@ -1,45 +1,79 @@
 import React, {useState, useEffect} from 'react'
+import NavBar from './components/navBar';
+
+
 import {Navbar, Container, Nav, NavDropdown, Button} from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faDollarSign, faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import './App.css';
 
+import {PUT_URL, GET_INVOICES_URL} from "./config"
+
 function App() {
 
   const [invoices, setInvoices] = useState([]);
-  const [isLoding, setLoading] = useState(false);
+  const [isLoding, setLoading] = useState(true);
 
-  //onComponentMount
+  //onComponentMount, conponentDidUpdate
   useEffect(() => {
-    setInvoices([
-      {id:1, total: 80, date: "01/25/2021", vendor: "Bar Bao"}, 
-      {id:2, total: 120, date: "02/31/2021", vendor: "Wilson Hardware & Kitchen"}, 
-      {id:3, total: 80, date: "01/26/2021", vendor: "Bar Bao"},
-      {id:4, total: 80, date: "01/29/2021", vendor: "Bar Bao"},
-      {id:5, total: 160, date: "01/27/2021", vendor: "The Lot"},
-      {id:6, total: 40, date: "02/22/2021", vendor: "Bar Bao"},
-      {id:7, total: 100, date: "02/25/2021", vendor: "Ambar"},
-      {id:8, total: 100, date: "02/22/2021", vendor: "Ambar"},
-      {id:9, total: 160, date: "02/16/2021", vendor: "The Lot"},
-      {id:10, total: 80, date: "02/15/2021", vendor: "Bar Bao"},
-      {id:11, total: 80, date: "02/13/2021", vendor: "Bar Bao"},
-      {id:12, total: 120, date: "02/07/2021", vendor: "The Lot"},
-      {id:13, total: 400, date: "02/01/2021", vendor: "Clerendon Ball Room"},
-      {id:14, total: 80, date: "05/09/2021", vendor: "Bar Bao"},
-      {id:15, total: 40, date: "04/11/2021", vendor: "Bar Bao"},
-      {id:16, total: 140, date: "03/29/2021", vendor: "The Lot"},
-      {id:17, total: 320, date: "03/30/2021", vendor: "Clerendon Ball Room"},
-    ])
-    // setLoading(false)
-  }, [])
+    if(isLoding) {
+      let Invoices = getInvoices();
+      setInvoices(invoices)
+      setLoading(false)
+    }
+    console.log(invoices, "from useEffect componentDIdUpdate")
+  }, [invoices])
+
+
+  // API FUNCTIONS
+
+  // GET ALL
+  const getInvoices = async () => {
+    const response = await fetch(GET_INVOICES_URL, {
+      method: 'GET',
+      "Access-Control-Allow-Origin": '*'
+    })
+    const body = await response.json()
+    const invoices = [...body.Items]; 
+    setInvoices(invoices)
+  }
+
+  // GET BY ID
+  const getInvoiceById = async (id) => {
+    console.log("getting invoice data")
+    // TO DO !!
+
+  }
+
+  // POST
+  const addInvoice = async () => {
+
+    // TO DO !!
+
+  }
   
-  // OnUpdate
-  useEffect(() => {}, [invoices])
-
-
-  // FUNCTIONS
-
-  const remove = (invoiceId) => {
+  // PUT
+  const markPaid = async (_invoice, i) => {
+    // pass object to be updated to backend
+    await fetch(PUT_URL, {
+      method: 'PUT',
+      headers: {
+        "origin": 'http://localhost:3000',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(_invoice),
+    })
+    .then((res) => { 
+      res.json().then((data) => {
+        let updatedInvoices = [...invoices]
+        updatedInvoices[i] = JSON.parse(data.body)
+        setInvoices(updatedInvoices);
+      })
+    })
+  }
+  
+  // DELETE BY ID
+  const removeInvoiceById = (invoiceId) => {
     let updatedInvoices = invoices.filter(invoice => invoice.id !== invoiceId)
     setInvoices(updatedInvoices)
   }
@@ -48,31 +82,10 @@ function App() {
 
   return (
     <div className="container-fluid vh-100 text-center content-center ">
-      <Navbar collapseOnSelect className="p-4 bg-ice2" sticky="top" expand="lg" variant="light">
-        <Container>
-          <Navbar.Brand className="m-2" href="#home">LATE NIGHT ICE</Navbar.Brand>
-          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-          <Navbar.Collapse id="responsive-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link className="m-2" href="#pricing">Pricing</Nav.Link>
-              <NavDropdown className="m-2" title="Invoices" id="collasible-nav-dropdown">
-                <NavDropdown.Item href="#invoice/pending">Pending</NavDropdown.Item>
-                <NavDropdown.Item href="#invoice/payed">Payed</NavDropdown.Item>
-                <NavDropdown.Item href="#invoice/all">All</NavDropdown.Item>
-                <NavDropdown.Divider />
-                <NavDropdown.Item href="#invoice/help">Help</NavDropdown.Item>
-              </NavDropdown>
-            </Nav>
-            <Nav>
-              <Nav.Link href="#profile">My Profile</Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-
+      <NavBar />
       <h2 className="m-4">Pending Invoices</h2>
       {
-      isLoding || invoices.length < 1 ? <h1>no Invoices to display</h1> : 
+      isLoding ? <h1>no Invoices to display</h1> : 
         <table className="table table-hover mt-5">
           <thead>
             <tr>
@@ -86,15 +99,15 @@ function App() {
             {
               invoices.map((invoice, i) => {
                 return (
-                  <tr key={invoice.id}>
+                  <tr key={i}>
                     <th>{invoice.id}</th>
                     <td>{invoice.total}</td>
-                    <td>{invoice.date}</td>
+                    <td>{invoice.paidDate}</td>
                     <td>{invoice.vendor}</td>
-                    <td><Button className="btn btn-lg btn-success" onClick={() => remove(invoice.id)}><FontAwesomeIcon icon={faThumbsUp}/> Paid</Button></td>
-                    <td><Button className="btn btn-lg btn-info" onClick={() => remove(invoice.id)}><FontAwesomeIcon icon={faImage}/> Info</Button></td>
-                    <td><Button className="btn btn-lg btn-warning" onClick={() => remove(invoice.id)}><FontAwesomeIcon icon={faDollarSign}/> pay</Button></td>
-                    <td><Button className="btn btn-lg btn-danger" onClick={() => remove(invoice.id)}><FontAwesomeIcon icon={faThumbsDown}/> NOK</Button></td>
+                    <td><Button className="btn btn-lg btn-success" onClick={() => markPaid(invoice, i)}><FontAwesomeIcon icon={faThumbsUp}/> Paid</Button></td>
+                    <td><Button className="btn btn-lg btn-info" onClick={() => getInvoiceById(invoice.id)}><FontAwesomeIcon icon={faImage}/> Info</Button></td>
+                    <td><Button className="btn btn-lg btn-warning" onClick={() => getInvoiceById(invoice.id)}><FontAwesomeIcon icon={faDollarSign}/> pay</Button></td>
+                    <td><Button className="btn btn-lg btn-danger" onClick={() => removeInvoiceById(invoice.id)}><FontAwesomeIcon icon={faThumbsDown}/> NOK</Button></td>
                   </tr>
                 )
               })
