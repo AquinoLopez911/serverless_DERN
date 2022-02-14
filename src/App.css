@@ -1,3 +1,7 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
 th, td {
   padding-top: 15px !important;
   padding-bottom: 15px !important;
@@ -5,20 +9,58 @@ th, td {
   border-bottom: 1px solid #e3f2fd;
 }
 
+a {
+  color: inherit;
+  text-decoration: solid;
+}
+
 .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
   background-color: #D7F4F0;
 }
 
 .bg-ice {
-  background-color: #e3f2fd;
+  background-color: #D7F4F0;
 }
 .text-ice {
   color: #e3f2fd;
 }
 
 .bg-ice2 {
-  background-color: #D7F4F0;
+  background-color: #e3f2fd;
 }
 .text-ice2 {
   color: #D7F4F0;
+}
+
+/* invoice-details */
+.invoice-border {
+  border: solid 1px #D7F4F0;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  max-width: 70%;
+  height: 80vh;
+  margin: 0 auto;
+}
+
+.div-bar-ice {
+  width: 100%;
+  background-color: #D7F4F0;
+  height: 2vw;
+  margin: 0 auto;
+}
+
+.div-bar-ice-70 {
+  margin: 0 auto;
+  background-color: #D7F4F0;
+  width: 80%;
+  height: 5px;
+}
+
+.invoiceDetailTable {
+  max-width: 75%;
+  margin: 20px auto;
+}
+
+.item:nth-child(1) {
+  max-width: 80%;
+  background-color: #e3f2fd;
 }
